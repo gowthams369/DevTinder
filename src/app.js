@@ -1,11 +1,25 @@
-const express = require('express')
+const express = require('express');
+const { adminAuth, userAuth } = require('./middlewares/auth.js');
 const app = express();
+
 
 // app.use("/", (req, res) => {
 //     res.send("This is listening in server")
 // })
 
-app.post("/user",(req,res)=>{
+app.use("/admin",adminAuth);
+
+app.use("/",(err,req,res,next)=>{
+    if(err){
+        res.status(500).send("Something went wrong")
+    }
+})
+
+app.get("/admin/getAllData",(req,res)=>{
+    res.send("All data send")
+})
+
+app.post("/user",userAuth,(req,res)=>{
     res.send("This is post method")
 })
 app.delete("/user",(req,res)=>{
