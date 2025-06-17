@@ -4,10 +4,15 @@ const connectDB = require('./config/database');
 const User = require("./models/user");
 const { validateSignupData } = require('./utils/validation');
 const bcrypt = require('bcryptjs');
-const user = require('./models/user');
+const jwt = require('jsonwebtoken');
+const cookies = require('cookie-parser');
+const cookieParser = require('cookie-parser');
+const { userAuth } = require('./middlewares/auth');
+
 
 
 app.use(express.json())
+app.use(cookieParser())
 
 app.post("/signup", async (req, res) => {
     try {
@@ -46,6 +51,11 @@ app.post("/login", async (req, res) => {
         }
         const isPasswordvalid = await bcrypt.compare(password, user.password);
         if (isPasswordvalid) {
+            const token = await jwt.sign({ _id: user._id }, "Dev@Tinder$790", { expiresIn: "7d" });
+            res.cookie("token", token, {
+               expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
+            });
+            console.log(token)
             res.send("Login sucessfull")
         } else {
             throw new Error("Invalid credential")
@@ -57,32 +67,19 @@ app.post("/login", async (req, res) => {
     }
 })
 
-app.get("/user", async (req, res) => {
-    const userEmail = req.body.emailId;
+app.get("/profile", userAuth, async (req, res) => {
     try {
-        const user = await User.find({ emailId: userEmail });
-        if (user.length === 0) {
-            res.status(404).send("user not found")
-        } else {
-            res.send(user);
-        }
+        const user = req.user;
+        res.send(user);
     } catch (error) {
-        res.status(400).send("Someting went wrong")
+        res.status(400).send(error.message)
 
     }
 })
 
-app.delete("/delete", async (req, res) => {
-    const userId = req.body.userId
-    try {
-        const user = await User.findByIdAndDelete({ _id: userId })
-        res.send("user deleted sucessfully")
-
-    } catch (error) {
-        res.status(400).send("User unable to delete")
-
-    }
-
+app.post("/sendConnectionRequest", userAuth, async (req, res) => {
+    console.log("send connection request")
+    res.send("Request is sending")
 })
 
 connectDB()
