@@ -13,7 +13,7 @@ app.post("/signup", async (req, res) => {
         //validate signup 
         validateSignupData(req);
 
-        const { firstName, lastName, emailId, password } = req.body;
+        const { firstName, lastName, emailId, age,password } = req.body;
         //hashing password
         const passwordHash = await bcrypt.hash(password, 10);
         console.log(passwordHash);
@@ -21,14 +21,16 @@ app.post("/signup", async (req, res) => {
         const user = new User({
             firstName,
             lastName,
+            age,
             emailId,
             password: passwordHash
 
         });
         await user.save()
-        res.send("User added sucessfully..")
+        res.status(200).send("User added sucessfully..")
         console.log(req.body)
     } catch (err) {
+        console.error(err.message)
         res.status(400).send("Error in adding data")
 
     }
