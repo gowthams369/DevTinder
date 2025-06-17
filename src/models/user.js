@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const validator = require('validator');
 
 const userSchema = new mongoose.Schema({
     firstName: {
@@ -15,7 +16,7 @@ const userSchema = new mongoose.Schema({
         required: true,
         unique: true,
         validate(value) {
-            if (validator.isEmail(value)) {
+            if (!validator.isEmail(value)) {
                 throw new Error("Email id is valid")
             }
         }
@@ -38,7 +39,7 @@ const userSchema = new mongoose.Schema({
     },
     photoUrl: {
         type: String,
-        default: ""
+        default: "https://t4.ftcdn.net/jpg/05/89/93/27/360_F_589932782_vQAEAZhHnq1QCGu5ikwrYaQD0Mmurm0N.jpg"
     },
     about: {
         type: String,
