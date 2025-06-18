@@ -1,87 +1,20 @@
 const express = require('express');
 const app = express();
 const connectDB = require('./config/database');
-const User = require("./models/user");
-const { validateSignupData } = require('./utils/validation');
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
-const cookies = require('cookie-parser');
 const cookieParser = require('cookie-parser');
-const { userAuth } = require('./middlewares/auth');
-
 
 
 app.use(express.json())
 app.use(cookieParser())
 
-app.post("/signup", async (req, res) => {
-    try {
-        //validate signup 
-        validateSignupData(req);
+const authRouter = require('./routes/auth');
+const profileRouter =require('./routes/profile');
+const requestRouter =require('./routes/request');
 
-        const { firstName, lastName, emailId, age, password } = req.body;
-        //hashing password
-        const passwordHash = await bcrypt.hash(password, 10);
-        console.log(passwordHash);
+app.use('/api',authRouter);
+app.use('/api',profileRouter);
+app.use('/api',requestRouter);
 
-        const user = new User({
-            firstName,
-            lastName,
-            age,
-            emailId,
-            password: passwordHash
-
-        });
-        await user.save()
-        res.status(200).send("User added sucessfully..")
-        console.log(req.body)
-    } catch (err) {
-        console.error(err.message)
-        res.status(400).send("Error in adding data")
-
-    }
-})
-
-app.post("/login", async (req, res) => {
-    try {
-        const { emailId, password } = req.body;
-        const user = await User.findOne({ emailId });
-        if (!user) {
-            throw new Error("Invalid Credentials");
-        }
-        const isPasswordvalid = await user.validatePassword(password);
-        if (isPasswordvalid) {
-           const token = await user.getJWT();
-
-            res.cookie("token", token, {
-               expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
-            });
-            console.log(token)
-            res.send("Login sucessfull")
-        } else {
-            throw new Error("Invalid credential")
-        }
-
-    } catch (error) {
-        res.status(400).send(error.message)
-
-    }
-})
-
-app.get("/profile", userAuth, async (req, res) => {
-    try {
-        const user = req.user;
-        res.send(user);
-    } catch (error) {
-        res.status(400).send(error.message)
-
-    }
-})
-
-app.post("/sendConnectionRequest", userAuth, async (req, res) => {
-    console.log("send connection request")
-    res.send("Request is sending")
-})
 
 connectDB()
     .then(() => {
