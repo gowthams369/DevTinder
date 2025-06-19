@@ -4,7 +4,7 @@ const express = require('express');
 const requestRouter = express.Router();
 
 
-requestRouter.post('/user/sendConnection', userAuth, sendConnection);
+requestRouter.post('/user/send/:status/:toUserId', userAuth, sendConnection);
 
 
 module.exports = requestRouter;
