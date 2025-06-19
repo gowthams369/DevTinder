@@ -37,7 +37,7 @@ const signUp = async (req, res) => {
 const login = async (req, res) => {
     try {
         const { emailId, password } = req.body;
-        const user = await User.findOne({ emailId });
+        const user = await User.findOne({ emailId:emailId });
         if (!user) {
             throw new Error("Invalid Credentials");
         }

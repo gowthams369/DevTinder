@@ -36,7 +36,8 @@ const sendConnection = async (req, res) => {
         const data = await connectionRequest.save();
 
         res.json({
-            message: "Connection request send sucessfully",
+            message:
+            req.user.firstName + " is " +status + " in " + toUser.firstName,
             data,
         })
 
