@@ -37,7 +37,7 @@ const sendConnection = async (req, res) => {
 
         res.json({
             message:
-            req.user.firstName + " is " +status + " in " + toUser.firstName,
+                req.user.firstName + " is " + status + " in " + toUser.firstName,
             data,
         })
 
@@ -47,4 +47,41 @@ const sendConnection = async (req, res) => {
     }
 }
 
-module.exports = { sendConnection }
+const reviewRequest = async (req, res) => {
+    try {
+        const loggedInUser = req.user;
+        const { status, requestId } = req.params;
+
+        const allowedStatus = ["accepted", "rejected"];
+        if (!allowedStatus.includes(status)) {
+            return res.status(400).json({ message: "Status is not allowed" })
+        }
+
+        const connectionRequest = await ConnectionRequest.findOne({
+            _id: requestId,
+            toUserId: loggedInUser._id,
+            status: "intrested"
+        });
+        if (!connectionRequest) {
+            return res
+                .status(400)
+                .json({ message: "Connectionm request not found" })
+        }
+
+        connectionRequest.status = status;
+        const data = await connectionRequest.save();
+        res.json({
+            message: "Connection request " + status,
+            data,
+        })
+
+
+    } catch (error) {
+
+        res.status(400).send(error.message)
+    }
+
+}
+
+
+module.exports = { sendConnection, reviewRequest }
