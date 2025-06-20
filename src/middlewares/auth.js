@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken')
 const User = require("../models/user");
+const dotenv = require('dotenv')
 
 const userAuth = async (req, res, next) => {
 
@@ -8,7 +9,7 @@ const userAuth = async (req, res, next) => {
         if (!token) {
             throw new Error("Token is not valid")
         }
-        const decodedMessage = await jwt.verify(token, "Dev@Tinder$790");
+        const decodedMessage = await jwt.verify(token, process.env.JWT_SECRET);
         const { _id } = decodedMessage;
         const user = await User.findById(_id)
         if (!user) {
