@@ -3,25 +3,27 @@ const app = express();
 const connectDB = require('./config/database');
 const cookieParser = require('cookie-parser');
 
+require('dotenv').config();
+
 
 app.use(express.json())
 app.use(cookieParser())
 
 const authRouter = require('./routes/auth');
-const profileRouter =require('./routes/profile');
-const requestRouter =require('./routes/request');
+const profileRouter = require('./routes/profile');
+const requestRouter = require('./routes/request');
 const userRouter = require('./routes/userRoute');
 
-app.use('/api',authRouter);
-app.use('/api',profileRouter);
-app.use('/api',requestRouter);
-app.use('/api',userRouter);
+app.use('/api', authRouter);
+app.use('/api', profileRouter);
+app.use('/api', requestRouter);
+app.use('/api', userRouter);
 
 
 connectDB()
     .then(() => {
         console.log("Databse connection established...");
-        app.listen(7777, () => {
+        app.listen(process.env.PORT, () => {
             console.log('Sever is running on port')
 
         })
