@@ -31,4 +31,4 @@ const editProfile = async (req, res) => {
 }
 
 
-module.exports = { getProfile, editProfile,forgetPassword }
+module.exports = { getProfile, editProfile }
