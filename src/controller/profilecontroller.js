@@ -30,9 +30,5 @@ const editProfile = async (req, res) => {
     }
 }
 
-const forgetPassword = async(req,res)=>{
-    const {password}=req.body;
-
-}
 
 module.exports = { getProfile, editProfile,forgetPassword }
